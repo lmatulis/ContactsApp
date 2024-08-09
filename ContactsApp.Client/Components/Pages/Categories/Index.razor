@@ -1,0 +1,86 @@
+﻿@page "/categories"
+@using ContactsApp.Client.Helpers
+
+@rendermode InteractiveServer
+@attribute [Authorize]
+
+@inject ICategoryService CategoryService
+
+<div class="container bg-light p-5 mt-2 shadow">
+    <h1>Edit Categories</h1>
+    <EditForm Model="formCategory" OnValidSubmit="HandleSubmit" class="shadow-sm rounded">
+        <DataAnnotationsValidator />
+        <ul class="list-group my-3">
+            <li class="list-group-item">
+                <label class="form-label" for="categoryName">
+                    <strong>Add Category</strong>
+                </label>
+                <div class="vstack d-flex">
+                    <InputText id="categoryName" class="form-control" placeholder="Category Name" @bind-Value="formCategory.Name"></InputText>
+                    <button type="submit" class="btn btn-primary rounded-pill mt-3 w-25 align-self-center">
+                        <i class="bi bi-floppy"></i>
+                    </button>
+                </div>
+                <ValidationMessage For="() => formCategory.Name" />
+            </li>
+        </ul>
+    </EditForm>
+    <CategoryAccordion Categories="@categories" OnCategoryDelete="DeleteCategory" />
+</div>
+
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    private UserInfo? userInfo;
+    //holds all categories from the user
+    private IEnumerable<CategoryDTO> categories = [];
+    //used for the edit form
+    private CategoryDTO formCategory = new CategoryDTO();
+
+    protected override async Task OnInitializedAsync()
+    {
+        //getting user info
+        userInfo = await UserInfoHelper.GetUserInfoAsync(AuthStateTask);
+
+        //get all categories
+        categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
+    }
+
+    private async Task HandleSubmit()
+    {
+
+        try
+        {
+            await CategoryService.CreateCategoryAsync(formCategory, userInfo!.UserId);
+            //clear the form
+            formCategory = new CategoryDTO();
+
+            //reload categories
+            categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+
+    }
+
+    private async Task DeleteCategory(int categoryId)
+    {
+        try
+        {
+            await CategoryService.DeleteCategoryAsync(categoryId, userInfo!.UserId);
+            //reload categories
+            categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+}

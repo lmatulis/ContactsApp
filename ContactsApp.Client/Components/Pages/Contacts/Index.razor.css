@@ -1,0 +1,16 @@
+﻿.sideNav {
+    border-radius: .5rem;
+    border-color: var(--cf-theme-300);
+    border-style: solid;
+    border-width: 1px;
+    background-color: var(--cf-theme-150);
+    padding-top: 2rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 2rem;
+    height: fit-content;
+}
+
+.sideNav .form-control, .sideNav .form-select{
+    border-color: var(--cf-theme-300);
+}

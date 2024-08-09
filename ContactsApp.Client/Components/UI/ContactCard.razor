@@ -1,0 +1,53 @@
+﻿@if (Contact is not null)
+{
+    <div class="card h-100 mb-2 contact-card shadow bg-light">
+        <div class="row g-4">
+            <div class="col-12 col-md-4 square-img-container rounded-start overflow-hidden">
+                <img src="@Contact.ImageURL" class="square-img" />
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="card-body">
+                    <h3 class="card-title">@Contact.FullName</h3>
+                    <address class="card-text">
+                        @Contact.Address1<br />
+                        @if (!string.IsNullOrEmpty(Contact.Address2))
+                        {
+                            @Contact.Address2
+
+                            <br />
+                        }
+                        @Contact.City, @Contact.State, @Contact.ZipCode
+                    </address>
+                    <div class="card-text">
+                        <span class="fw-bold me-2">Phone:</span>@Contact.PhoneNumber
+                    </div>
+                    <div class="card-text">
+                        <span class="fw-bold me-2">Email:</span>@Contact.Email
+                    </div>
+                    <div>
+                        <a href="/contacts/edit/@Contact.Id"><i class="bi bi-pencil-fill text-success px-md-1"></i></a>
+                        <a href="/contacts/email/@Contact.Id"><i class="bi bi-envelope-fill text-primary px-md-1"></i></a>
+                        <a href=""></a>
+                    </div>
+                    <div>
+                        @foreach(var category in Contact.Categories)
+                        {
+                            <span class="badge rounded-pill text-bg-secondary text-center px-2 me-2" id="@category.Id">@category.Name</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div>
+        null
+    </div>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public ContactDTO? Contact { get; set; }
+}
