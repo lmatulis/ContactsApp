@@ -13,7 +13,7 @@ namespace ContactsApp.Data
         public static string? GetConnectionString(IConfiguration configuration)
         {
             var connectionString = configuration.GetConnectionString("DefaultConnection"); //Local connection string
-            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_PRIVATE_URL"); //railway connection string
+            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL"); //railway connection string
             return string.IsNullOrEmpty(databaseUrl) ? connectionString : BuildConnectionString(databaseUrl);
         }
 
