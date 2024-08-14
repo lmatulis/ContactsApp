@@ -1,6 +1,6 @@
 ﻿@page "/contacts"
 @attribute [Authorize]
-@rendermode InteractiveServer
+@rendermode InteractiveWebAssembly
 @inject IContactService ContactService
 @inject ICategoryService CategoryService
 @inject NavigationManager Nav
@@ -13,7 +13,7 @@
         {
             <h1>Search Results for "@SearchTerm"</h1>
         }
-        else if(CategoryId is not null or 0)
+        else if (CategoryId is not null or 0)
         {
             <h1>@currentCategory?.Name Category</h1>
         }
@@ -38,7 +38,7 @@
                 <div class="mt-5 pt-3">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <label class="form-label"><strong>Category Filter</strong></label>
-                        <a href="/categories" class="btn btn-secondary btn-sm d-inline">Edit Categories</a>
+                        <a href="/categories" class="btn btn-primary btn-sm d-inline">View Categories</a>
                     </div>
                     <InputSelect class="form-select" @bind-Value="CategoryId" @bind-Value:after="HandleCategoryChanged">
                         <option value="">All Categories</option>
@@ -55,12 +55,14 @@
             }
         </div>
         <div class="col-12 col-lg-8">
-            <div class="row row-cols-1">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-1 g-3">
                 @if (contacts is not null)
                 {
                     foreach (ContactDTO? contact in contacts)
                     {
-                        <ContactCard Contact="contact" />
+                        <div class="col" @key="contact.Id">
+                            <ContactCard Contact="contact" OnDelete="HandleDelete" />
+                        </div>
                     }
                 }
 
@@ -172,5 +174,19 @@
         }
 
         messageId = Guid.NewGuid();
+    }
+
+    private async Task HandleDelete(int contactId)
+    {
+        try
+        {
+            await ContactService.DeleteContactAsync(contactId, userInfo!.UserId);
+            contacts = await ContactService.GetContactsAsync(userInfo!.UserId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
     }
 }

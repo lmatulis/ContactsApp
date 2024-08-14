@@ -6,6 +6,15 @@ namespace ContactsApp.Client.Services.Interfaces
     {
         Task<ContactDTO> CreateContactAsync(ContactDTO contact, string userId);
         /// <summary>
+        /// Sends an Email to the specified contact based on the contact Id
+        /// </summary>
+        /// <param name="contactId"></param>
+        /// <param name="emailData"></param>
+        /// <param name="userId"></param>
+        /// <returns>True if successful, false otherwise.</returns>
+        Task<bool> EmailContactAsync(int contactId, EmailData emailData, string userId);
+
+        /// <summary>
         /// Returns a ContactDTO that has been selected by a contactID
         /// </summary>
         /// <param name="Id"></param>
@@ -38,6 +47,14 @@ namespace ContactsApp.Client.Services.Interfaces
         /// <param name="userId"></param>
         /// <returns></returns>
         Task<IEnumerable<ContactDTO>> SearchContactsAsync(string searchTerm, string userId);
+
+        /// <summary>
+        /// Deletes a contact from the database using the contact Id
+        /// </summary>
+        /// <param name="contactId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task DeleteContactAsync(int contactId, string userId);
 
     }
 }

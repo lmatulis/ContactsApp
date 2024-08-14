@@ -1,7 +1,7 @@
 ﻿@page "/categories"
 @using ContactsApp.Client.Helpers
 
-@rendermode InteractiveServer
+@rendermode InteractiveWebAssembly
 @attribute [Authorize]
 
 @inject ICategoryService CategoryService
@@ -25,7 +25,7 @@
             </li>
         </ul>
     </EditForm>
-    <CategoryAccordion Categories="@categories" OnCategoryDelete="DeleteCategory" />
+    <CategoryAccordion Categories="@categories" OnCategoryDelete="DeleteCategory" OnCategoryUpdate="UpdateCategory" />
 </div>
 
 @code {
@@ -77,6 +77,21 @@
             categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId);
         }
         catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+            throw;
+        }
+    }
+
+    private async Task UpdateCategory(CategoryDTO category)
+    {
+        try
+        {
+
+            await CategoryService.UpdateCategoryAsync(category, userInfo!.UserId);
+            categories = await CategoryService.GetCategoriesAsync(userInfo!.UserId); 
+        }
+        catch(Exception ex)
         {
             Console.WriteLine(ex);
             throw;

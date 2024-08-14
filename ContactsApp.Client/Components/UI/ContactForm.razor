@@ -8,7 +8,7 @@
         <DataAnnotationsValidator />
         <div class="row p-2 g-3">
             <div class="col-12 col-md-4">
-                <!--Image Here-->
+                @*Image Here*@
                 <div class="square-img-container">
                     <img src="@(string.IsNullOrEmpty(Contact.ImageURL) ? ImageHelper.DefaultContactImage : Contact.ImageURL)" class="square-img" />
                 </div>
@@ -18,52 +18,61 @@
                     <span class="text-danger">@imageError</span>
                 </div>
             </div>
+
             <div class="col-12 col-md-8">
-                <!--Form Data-->
+                @*Form Data*@
                 <div class="row g-2">
-                    <!--First Name-->
+
+                    @*First Name*@
                     <div class="col-12 col-md-6">
                         <label for="firstName" class="form-label">First Name</label>
                         <InputText @bind-Value="Contact.FirstName" id="firstName" class="form-control" aria-label="First Name" placeholder="First Name" />
                         <ValidationMessage For="() => Contact.FirstName" />
                     </div>
-                    <!--Last Name-->
+
+                    @*Last Name*@
                     <div class="col-12 col-md-6">
                         <label for="lastName" class="form-label">Last Name</label>
                         <InputText @bind-Value="Contact.LastName" id="lastName" class="form-control" aria-label="Last Name" placeholder="Last Name" />
                         <ValidationMessage For="() => Contact.LastName" />
                     </div>
-                    <!--Email-->
+
+                    @*Email*@
                     <div class="col-12 col-md-6">
                         <label for="email" class="form-label">Email</label>
                         <InputText @bind-Value="Contact.Email" id="email" class="form-control" aria-label="Email" placeholder="Email" />
                         <ValidationMessage For="() => Contact.Email" />
                     </div>
-                    <!--Phone-->
+
+                    @*Phone*@
                     <div class="col-12 col-md-6">
                         <label for="phone" class="form-label">Phone Number</label>
                         <InputText @bind-Value="Contact.PhoneNumber" id="phone" class="form-control" aria-label="Phone" placeholder="(000) 000-0000" />
                         <ValidationMessage For="() => Contact.PhoneNumber" />
                     </div>
-                    <!--Address1-->
+
+                    @*Address1*@
                     <div class="col-12">
                         <label for="address1" class="form-label">Address</label>
                         <InputText @bind-Value="Contact.Address1" id="address1" class="form-control" aria-label="Address" placeholder="1234 Main Street" />
                         <ValidationMessage For="() => Contact.Address1" />
                     </div>
-                    <!--Address2-->
+
+                    @*Address2*@
                     <div class="col-12">
                         <label for="address2" class="form-label">Address 2</label>
                         <InputText @bind-Value="Contact.Address2" id="address2" class="form-control" aria-label="Address 2" placeholder="Suite 103" />
                         <ValidationMessage For="() => Contact.Address2" />
                     </div>
-                    <!--City-->
+
+                    @*City*@
                     <div class="col-12 col-md-6">
                         <label for="city" class="form-label">City</label>
                         <InputText @bind-Value="Contact.City" id="city" class="form-control" aria-label="City" placeholder="City" />
                         <ValidationMessage For="() => Contact.City" />
                     </div>
-                    <!--State-->
+
+                    @*State*@
                     <div class="col-12 col-md-4">
                         <label class="form-label">State</label>
                         <InputSelect @bind-Value="Contact.State" class="form-select">
@@ -77,16 +86,18 @@
                         </InputSelect>
                         <ValidationMessage For="() => Contact.State" />
                     </div>
-                    <!--Zip Code-->
+
+                    @*Zip Code*@
                     <div class="col-12 col-md-2">
                         <label for="zip" class="form-label">Zip Code</label>
                         <InputNumber @bind-Value="Contact.ZipCode" id="zip" class="form-control" aria-label="Zip Code" placeholder="Zip Code" />
                         <ValidationMessage For="() => Contact.ZipCode" />
                     </div>
-                    <!--Categories-->
+
+                    @*Categories*@
                      <div class="col-12 col-md-6">
                         <label for="categories" class="form-label">Categories</label>
-                        <InputSelect @bind-Value="selectedCategoryIds" class="form-select">
+                        <InputSelect @bind-Value="selectedCategoryIds" class="form-select" multiple>
                             @foreach (var category in categories)
                             {
                                 <option value="@category.Id">
@@ -95,6 +106,7 @@
                             }
                         </InputSelect> 
                     </div> 
+
                     @*Alternate Categories*@
                     @* <div class="col-12 col-md-6">
                         <label for="categories" class="form-label">Categories</label>
@@ -105,13 +117,15 @@
                             }
                         </InputRadioGroup>
                     </div> *@
-                    <!--Birthday-->
+
+                    @*Birthday*@
                     <div class="col-12 col-md-6">
                         <label class="form-label" for="birthDate">Birthday</label>
                         <InputDate id="birthDate" @bind-Value="Contact.BirthDate" class="form-control"></InputDate>
                         <ValidationMessage For="() => Contact.BirthDate" />
                     </div>
-                    <!--Buttons-->
+
+                    @*Buttons*@
                     <div class="col-12 justify-content-end">
                         <a href="contacts" class="btn btn-lg btn-outline-secondary">Cancel</a>
                         <button type="submit" class="btn btn-lg btn-primary">Save</button>

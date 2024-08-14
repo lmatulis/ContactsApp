@@ -37,18 +37,19 @@
                 <label for="LastName" class="form-label">Last Name</label>
                 <ValidationMessage For="() => Input.LastName" class="text-danger" />
             </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+            <div class="col-md-6 mb-3">
+                <img src="@(user?.ImageId.HasValue == true ? $"/api/uploads/{user.ImageId}" : ImageHelper.DefaultProfilePicture)" class="p-5 pt-0 img-fluid rounded-3" id="imagePreview" />
+                <label class="form-label" for="image"></label>
+                <input type="file" class="form-control"
+                       accept=".jpg,.jpeg,.png,.svg,.gif"
+                       name="Input.ProfilePicture"
+                       onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])" />
+            </div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary mb-3">Save</button>
         </EditForm>
     </div>
-    <div class="col-md-6 order-first order-md-last">
-        <img src="@(user?.ImageId.HasValue == true ? $"/api/uploads/{user.ImageId}" : ImageHelper.DefaultProfilePicture)" class="p-5 pt-0 img-fluid rounded-3" id="imagePreview" />
-        <label class="form-label" for="image"> Profile Picture</label>
-        <input type="file" class="form-control"
-               accept=".jpg,.jpeg,.png,.svg,.gif"
-               name="Input.ProfilePicture"
-               onchange="document.getElementById('imagePreview').src = window.URL.createObjectURL(this.files[0])" />
-    </div>
 </div>
+
 
 @code {
     private ApplicationUser user = default!;

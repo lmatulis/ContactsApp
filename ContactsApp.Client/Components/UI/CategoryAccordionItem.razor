@@ -6,27 +6,27 @@
             {
 
                 <div class="d-md-flex gap-3 p-3">
-                    <div class="flex-grow-1 gap-2 hstack align-item-center" role="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
+                    <div class="flex-grow-1 gap-2 hstack align-item-center subTitle" style="font-size: 1.2rem;" role="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
                         @Category.Name
                     </div>
                     <div class="hstack">
-                        <a role="button">
+                        <a role="button" @onclick="() => status = Status.Editing">
                             <i class="bi bi-pencil-fill text-success px-md-1" aria-label="Edit Category"></i>
                         </a>
                         <a role="button" @onclick="() => status = Status.Deleting">
                             <i class="bi bi-trash-fill text-danger px-md-1" aria-label="Delete Category"></i>
                         </a>
-                        <a role="button">
+                        <a role="button" href="/categories/email/@Category.Id">
                             <i class="bi bi-envelope-fill text-primary px-md-1" aria-label="Email Category"></i>
                         </a>
                     </div>
                 </div>
 
             }
-            else if(status == Status.Deleting)
+            else if (status == Status.Deleting)
             {
                 <div class="d-md-flex gap-3 p-3">
-                    <div class="flex-grow-1 gap-2 hstack align-item-center" role="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
+                    <div class="flex-grow-1 gap-2 hstack align-item-center subTitle" style="font-size: 1.2rem;" role="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
                         @Category.Name
                     </div>
                     <div>
@@ -43,14 +43,65 @@
                 </div>
 
             }
+            else if (status == Status.Editing)
+            {
+                <div class="d-md-flex gap-3 p-3">
+                    <div class="flex-grow-1 gap-2 hstack align-item-center" role="button" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
+                        <EditForm Model="Category" class="d-md-flex gap-3 p-3 align-items-center" OnValidSubmit="HandleUpdate">
+                            <DataAnnotationsValidator />
+                            <div class="flex-grow-1 hstack gap-2 align-items-center" role="button">
+                                <span class="badge bg-secondary rounded-pill small" data-bs-toggle="collapse" data-bs-target="#collapse-@Category.Id">
+                                    @Category.Contacts.Count
+                                </span>
+                                <div class="vstack gap-2">
+                                    <InputText @bind-Value="Category.Name" class="form-control" />
+                                    <ValidationMessage For="() => Category.Name" />
+                                </div>
+                            </div>
+                            <div class="mt-2 mt-md-0">
+                                <span class="text-nowrap">
+                                    <button type="submit" class="btn btn-primary btn-sm me-1">
+                                        <i class="bi bi-floppy"></i>
+                                        Save Changes
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger" @onclick="CancelEdit">
+                                        <i class="bi bi-x"></i>
+                                        Cancel
+                                    </button>
+                                </span>
+                            </div>
+                        </EditForm>
+
+                    </div>
+                </div>
+            }
         </div>
         <div class="accordion-collapse collapse" id="collapse-@Category.Id" data-bs-parent="#@AccordionId">
             <div class="accordion-body">
-                <ul class="list-group">
-                    <li class="list-group-item text-center lead text-secondary">
-                        Category Info Here
-                    </li>
-                </ul>
+                <div class="row row-cols-1 row-cols-md-3">
+                    @if (contacts != null)
+                    {
+                        @foreach (ContactDTO contact in contacts)
+                        {
+                            <div class="col my-3">
+                                <div class="row align-items-center">
+                                    <div class="col-3">
+                                        <img src="@contact.ImageURL" class="profile-picture" alt="Profile Picture" style="height: 4.5rem;aspect-ratio: 1/1;border-radius: 50%;border: solid 1px black;" />
+                                    </div>
+                                    <div class="col-9 descText">
+                                        @contact.FullName
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col">
+                            <div>No Contacts in this Category</div>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -66,6 +117,9 @@
     [Parameter, EditorRequired]
     public EventCallback<int> OnDelete { get; set; }
 
+    [Parameter, EditorRequired]
+    public EventCallback<CategoryDTO> OnUpdate { get; set; }
+
     private enum Status
     {
         Viewing,
@@ -73,11 +127,39 @@
         Deleting
     }
 
+    private List<ContactDTO>? contacts;
+
     private Status status = Status.Viewing;
+    private string? originalName;
+
+    protected override void OnParametersSet()
+    {
+        if (Category != null)
+        {
+            originalName = Category.Name;
+            contacts = Category.Contacts.ToList();
+        }
+    }
+
 
     private async Task HandleDelete()
     {
         await OnDelete.InvokeAsync(Category!.Id);
         status = Status.Viewing;
+    }
+
+    private async Task HandleUpdate()
+    {
+        await OnUpdate.InvokeAsync(Category);
+        status = Status.Viewing;
+    }
+
+    private void CancelEdit()
+    {
+        if (!string.IsNullOrEmpty(originalName))
+        {
+            Category!.Name = originalName;
+            status = Status.Viewing;
+        }
     }
 }

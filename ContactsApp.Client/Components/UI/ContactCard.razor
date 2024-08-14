@@ -1,8 +1,8 @@
 ﻿@if (Contact is not null)
 {
-    <div class="card h-100 mb-2 contact-card shadow bg-light">
-        <div class="row g-4">
-            <div class="col-12 col-md-4 square-img-container rounded-start overflow-hidden">
+    <div class="card h-100 contact-card shadow bg-light">
+        <div class="row g-0">
+            <div class="col-12 col-md-4 square-img-container rounded-start rounded-md-end overflow-hidden">
                 <img src="@Contact.ImageURL" class="square-img" />
             </div>
             <div class="col-12 col-md-8">
@@ -24,13 +24,25 @@
                     <div class="card-text">
                         <span class="fw-bold me-2">Email:</span>@Contact.Email
                     </div>
+
+                    @if (isDeleting == false)
+                    {
+                        <div>
+                            <a href="/contacts/edit/@Contact.Id"><i class="bi bi-pencil-fill text-success px-md-1"></i></a>
+                            <a href="/contacts/email/@Contact.Id"><i class="bi bi-envelope-fill text-primary px-md-1"></i></a>
+                            <a role="button" @onclick="() => isDeleting=true"><i class="bi bi-trash-fill text-danger px-md-1"></i></a>
+                        </div>
+
+                    }
+                    else
+                    {
+                        <div class="text-danger">Are you sure you want to delete? This is permanent.</div>
+                        <button class="btn btn-sm btn-danger" @onclick="DeleteContact"><i class="bi bi-trash-fill text-light"></i>  Delete</button>
+                        <button class="btn btn-sm btn-secondary" @onclick="()=>isDeleting=false"><i class="bi bi-x-circle-fill text-light"></i>  Cancel</button>
+                    }
+
                     <div>
-                        <a href="/contacts/edit/@Contact.Id"><i class="bi bi-pencil-fill text-success px-md-1"></i></a>
-                        <a href="/contacts/email/@Contact.Id"><i class="bi bi-envelope-fill text-primary px-md-1"></i></a>
-                        <a href=""></a>
-                    </div>
-                    <div>
-                        @foreach(var category in Contact.Categories)
+                        @foreach (var category in Contact.Categories)
                         {
                             <span class="badge rounded-pill text-bg-secondary text-center px-2 me-2" id="@category.Id">@category.Name</span>
                         }
@@ -50,4 +62,15 @@ else
 @code {
     [Parameter, EditorRequired]
     public ContactDTO? Contact { get; set; }
+
+    [Parameter, EditorRequired]
+    public EventCallback<int> OnDelete { get; set; }
+
+    bool isDeleting = false;
+
+    private async Task DeleteContact()
+    {
+        await OnDelete.InvokeAsync(Contact!.Id);
+        isDeleting = false;
+    }
 }

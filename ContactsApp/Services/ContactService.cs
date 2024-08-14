@@ -3,6 +3,7 @@ using ContactsApp.Client.Services.Interfaces;
 using ContactsApp.Helpers;
 using ContactsApp.Models;
 using ContactsApp.Services.Interfaces;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace ContactsApp.Services
 {
@@ -10,10 +11,12 @@ namespace ContactsApp.Services
     {
 
         private readonly IContactRepository _repository;
+        private readonly IEmailSender _emailSender;
 
-        public ContactService(IContactRepository repository)
+        public ContactService(IContactRepository repository, IEmailSender emailSender)
         {
             _repository = repository;
+            _emailSender = emailSender;
         }
 
         public async Task<ContactDTO> CreateContactAsync(ContactDTO contactDTO, string userId)
@@ -53,6 +56,29 @@ namespace ContactsApp.Services
             return createdContact.ToDTO();
         }
 
+        public async Task DeleteContactAsync(int contactId, string userId)
+        {
+            await _repository.DeleteContactAsync(contactId, userId);
+        }
+
+        public async Task<bool> EmailContactAsync(int contactId, EmailData emailData, string userId)
+        {
+            try
+            {
+                Contact? contact = await _repository.GetContactByIdAsync(contactId, userId);
+
+                if (contact == null) { return false; }
+
+                await _emailSender.SendEmailAsync(contact.Email!, emailData.Subject!, emailData.Message!);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
+
         public async Task<ContactDTO?> GetContactByIdAsync(int Id, string userId)
         {
             Contact? contact = await _repository.GetContactByIdAsync(Id, userId);
@@ -69,7 +95,7 @@ namespace ContactsApp.Services
         {
             IEnumerable<Contact> contacts = await _repository.GetContactsByCategoryId(categoryId, userId);
 
-            return contacts.Select(c =>c.ToDTO()).ToList();
+            return contacts.Select(c => c.ToDTO()).ToList();
         }
 
         public async Task<IEnumerable<ContactDTO>> SearchContactsAsync(string searchTerm, string userId)
@@ -82,7 +108,7 @@ namespace ContactsApp.Services
         public async Task UpdateContactAsync(ContactDTO contactDTO, string userId)
         {
             Contact? contact = await _repository.GetContactByIdAsync(contactDTO.Id, userId);
-            if(contact is not null)
+            if (contact is not null)
             {
                 contact.FirstName = contactDTO.FirstName;
                 contact.LastName = contactDTO.LastName;
@@ -94,28 +120,28 @@ namespace ContactsApp.Services
                 contact.State = contactDTO.State;
                 contact.ZipCode = contactDTO.ZipCode;
                 contact.BirthDate = contactDTO.BirthDate;
+
+                if (contactDTO.ImageURL!.StartsWith("data:"))
+                {
+                    contact.Image = UploadHelper.GetImageUpload(contactDTO.ImageURL);
+                }
+                else
+                {
+                    contact.Image = null;
+                }
+
+                contact.Categories.Clear();
+
+                await _repository.UpdateContactAsync(contact, userId);
+
+                //remove the old categories from the database
+                await _repository.DeleteCategoriesFromContactAsync(contact.Id, userId);
+
+                //Add back the new categories
+                IEnumerable<int> selectedCategoryIds = contactDTO.Categories.Select(c => c.Id);
+                await _repository.AddCategoriesToContactAsync(contact.Id, selectedCategoryIds, userId);
+
             }
-
-            if (contactDTO.ImageURL.StartsWith("data:"))
-            {
-                contact.Image = UploadHelper.GetImageUpload(contactDTO.ImageURL);
-            }
-            else 
-            {
-                contact.Image = null;
-            }
-
-            contact.Categories.Clear();
-
-            await _repository.UpdateContactAsync(contact, userId);
-
-            //remove the old categories from the database
-            await _repository.DeleteCategoriesFromContactAsync(contact.Id, userId);
-
-            //Add back the new categories
-            IEnumerable<int> selectedCategoryIds = contactDTO.Categories.Select(c => c.Id);
-            await _repository.AddCategoriesToContactAsync(contact.Id, selectedCategoryIds, userId);
-
         }
     }
 }

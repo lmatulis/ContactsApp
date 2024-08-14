@@ -9,8 +9,9 @@
 <PageTitle>Email</PageTitle>
 
 <div class="container">
-    <div class="card shadow-lg my-3">
+    <div class="card shadow-lg my-5">
         <div class="card-body">
+            <h2 class="card-title text-center">Email</h2>
             <EmailForm EmailData="emailData" OnSubmit="HandleSubmit" />
         </div>
     </div>
@@ -58,7 +59,10 @@
 
         try
         {
-            message = $"Your email to {contact?.FullName} was sent successfully.";
+            if (await ContactService.EmailContactAsync(ContactId, formEmailData, userInfo!.UserId))
+            {
+                message = $"Your email to {contact?.FullName} was sent successfully.";
+            }
         }
         catch (Exception ex)
         {

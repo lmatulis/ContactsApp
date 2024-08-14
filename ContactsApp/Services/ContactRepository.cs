@@ -50,9 +50,17 @@ namespace ContactsApp.Services
             }
         }
 
-        public async Task DeleteContactAsync(int Id, string userId)
+        public async Task DeleteContactAsync(int id, string userId)
         {
-            throw new NotImplementedException();
+            using ApplicationDbContext context = contextFactory.CreateDbContext();
+
+            Contact? contact = await context.Contacts.FirstOrDefaultAsync(c => c.Id == id && c.AppUserId == userId);
+
+            if(contact != null)
+            {
+                context.Contacts.Remove(contact);
+                await context.SaveChangesAsync();
+            }
         }
 
         public async Task<IEnumerable<Contact>> GetContactsByCategoryId(int categoryId, string userId)
