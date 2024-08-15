@@ -3,6 +3,7 @@
     --cf-title-font: "Lexend", sans-serif;
     --cf-subtitle-font: "Fira Sans", sans-serif;
     --cf-body-font: 'Roboto', sans-serif;
+    --cf-logo-font: "Onest", sans-serif;
     /* colors */
     --cf-dark-color: #212121;
     --cf-light-color: #deeefb;
@@ -28,6 +29,10 @@ h1, h2, h3, h4, h5, h6 {
 footer {
     color: var(--cf-light-color);
     background-color: var(--cf-dark-color);
+}
+
+.logo {
+    font-family: var(--cf-logo-font);
 }
 
 .mainTitle {
