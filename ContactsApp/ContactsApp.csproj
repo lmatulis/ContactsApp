@@ -9,10 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Data\DemoImages.zip" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\ContactsApp.Client\ContactsApp.Client.csproj" />
     <PackageReference Include="Bogus" Version="35.6.0" />
     <PackageReference Include="MailKit" Version="4.7.1.1" />
